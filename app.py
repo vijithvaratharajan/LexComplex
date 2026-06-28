@@ -167,8 +167,8 @@ def group_by_level(records: list[dict]) -> dict[str, list]:
 
 def make_bar_chart(level_pcts: dict) -> plt.Figure:
     fig, ax = plt.subplots(figsize=(8, 3.2))
-    fig.patch.set_facecolor("#0f172a")
-    ax.set_facecolor("#0f172a")
+    fig.patch.set_alpha(0)
+    ax.set_facecolor("none")
 
     labels = LEVELS
     values = [level_pcts.get(lv, 0) for lv in labels]
@@ -184,17 +184,16 @@ def make_bar_chart(level_pcts: dict) -> plt.Figure:
                 bar.get_height() + 0.5,
                 f"{val:.1f}%",
                 ha="center", va="bottom",
-                fontsize=9, color="#e2e8f0",
+                fontsize=9,
             )
 
-    ax.set_ylabel("% of tokens", color="#94a3b8", fontsize=10)
+    ax.set_ylabel("% of tokens", fontsize=10)
     ax.set_ylim(0, max(values) * 1.2 if any(values) else 10)
-    ax.tick_params(colors="#94a3b8", labelsize=10)
-    ax.spines[:].set_color("#334155")
-    ax.yaxis.grid(True, color="#1e293b", linewidth=0.6, zorder=0)
+    ax.tick_params(labelsize=10)
+    ax.spines[:].set_visible(False)
+    ax.yaxis.grid(True, linewidth=0.6, zorder=0, alpha=0.3)
     ax.set_axisbelow(True)
-    ax.set_title("Vocabulary Level Distribution", color="#e2e8f0",
-                 fontsize=12, pad=10)
+    ax.set_title("Vocabulary Level Distribution", fontsize=12, pad=10)
 
     return fig
 
@@ -202,52 +201,22 @@ def make_bar_chart(level_pcts: dict) -> plt.Figure:
 
 def main():
     st.set_page_config(
-        page_title="Lexical Profiler",
+        page_title="LexComplex",
         page_icon="📊",
         layout="wide",
     )
 
-    # ── custom CSS ──
+    # Only structural styles — no colour overrides so Streamlit's own
+    # light/dark theme toggle works correctly.
     st.markdown("""
     <style>
-    html, body, [data-testid="stAppViewContainer"] {
-        background-color: #0f172a;
-        color: #e2e8f0;
-    }
-    [data-testid="stSidebar"] { background-color: #1e293b; }
-    .stTextArea textarea {
-        background-color: #1e293b;
-        color: #e2e8f0;
-        border: 1px solid #334155;
-        font-size: 14px;
-    }
-    .stButton > button {
-        background-color: #6d28d9;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1.5rem;
-        font-size: 15px;
-    }
-    .stButton > button:hover { background-color: #7c3aed; }
-    div[data-testid="metric-container"] {
-        background-color: #1e293b;
-        border: 1px solid #334155;
-        border-radius: 10px;
-        padding: 14px 18px;
-    }
-    div[data-testid="metric-container"] label { color: #94a3b8 !important; }
-    div[data-testid="metric-container"] [data-testid="stMetricValue"] {
-        color: #a78bfa !important;
-        font-size: 1.5rem !important;
-    }
     .section-header {
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        color: #64748b;
         margin: 24px 0 8px;
+        opacity: 0.6;
     }
     .word-pill {
         display: inline-block;
@@ -258,21 +227,20 @@ def main():
         font-family: 'Courier New', monospace;
     }
     .note-box {
-        background: #1e293b;
         border-left: 3px solid #6d28d9;
         padding: 12px 16px;
         border-radius: 0 8px 8px 0;
         font-size: 13px;
-        color: #94a3b8;
+        opacity: 0.8;
         margin: 12px 0;
     }
     </style>
     """, unsafe_allow_html=True)
 
     # ── header ──
-    st.markdown("## 📊 Lexical Complexity Profiler")
+    st.markdown("## 📊 LexComplex")
     st.markdown(
-        "<span style='color:#64748b;font-size:14px;'>"
+        "<span style='font-size:14px;opacity:0.6;'>"
         "Vocabulary-level analysis for SLA research and materials development"
         "</span>",
         unsafe_allow_html=True,
@@ -405,7 +373,7 @@ def _render_chart(stats: dict):
     fig = make_bar_chart(stats["level_pcts"])
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=130, bbox_inches="tight",
-                facecolor=fig.get_facecolor())
+                transparent=True)
     st.image(buf.getvalue(), use_container_width=True)
     plt.close(fig)
 
