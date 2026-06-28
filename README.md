@@ -2,7 +2,7 @@
 
 A vocabulary-level profiler for second language acquisition research and materials development. Paste any English text, and LexComplex tells you how much of it falls at each CEFR level, how lexically dense it is, how varied its vocabulary is, and which words are likely to challenge a learner at a given proficiency stage.
 
-**[Live app](https://your-app-url.streamlit.app)**
+**[Live app](https://lexcomplex.streamlit.app)**
 
 ---
 
